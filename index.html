@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Content Security Policy to enhance security -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self'; 
         script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://cdnjs.cloudflare.com;
@@ -188,8 +187,6 @@
         .panel-content-wrapper { position: relative; z-index: 2; }
         .reputation-tooltip { visibility: hidden; opacity: 0; transition: opacity 0.2s, visibility 0.2s; pointer-events: none; }
         .reputation-checker:hover .reputation-tooltip { visibility: visible; opacity: 1; }
-        .matrix-tooltip { visibility: hidden; opacity: 0; transition: opacity 0.2s, visibility 0.2s; pointer-events: none; background: var(--bg-primary); font-size: 1rem; line-height: 1.5rem; z-index: 9999; padding: 1rem; width: 22rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-shadow: 0 10px 20px var(--shadow-color); }
-        .matrix-cell:hover .matrix-tooltip { visibility: visible; opacity: 1; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
         @keyframes slideInUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -206,7 +203,6 @@
 </head>
 <body data-theme="slate">
 
-    <!-- Homepage Section -->
     <div id="homepage">
         <canvas id="neuronCanvas"></canvas>
         <div class="homepage-panel">
@@ -218,7 +214,6 @@
         </div>
     </div>
 
-    <!-- Main Application Container (Initially Hidden) -->
     <div id="app-container">
         <canvas id="interactive-background"></canvas>
         <div id="root"></div>
@@ -682,7 +677,6 @@
                     **Required Output:** Respond ONLY with a valid JSON object with two keys:
                     1. "score": A number from 0 (Safe) to 100 (Malicious).
                     2. "verdict": A single word: "Safe", "Suspicious", or "Malicious".
-                    3. Double check following cases: file type is pdf: check properties for JS. If no JS reduce score.If you don't see any damage and suspicious exfiltration, reduce score.
                     `;
 
                     const payload = { contents: [{ parts: [{ text: prompt }] }] };
@@ -900,16 +894,17 @@
                     const fileAttributes = hashResult?.fileReport?.data?.attributes;
                     
                     const prompt = `You are an elite cybersecurity threat intelligence analyst. Your task is to analyze the provided sandbox behavioral report and file context, then generate a comprehensive MITRE ATT&CK analysis.
+                    
                     **Context:**
                     - **File Names:** ${JSON.stringify(fileAttributes?.names)}
                     - **File Type:** ${fileAttributes?.type_description}
                     - **Suggested Threat Label:** ${fileAttributes?.popular_threat_classification?.suggested_threat_label || 'N/A'}
 
                     **Instructions:**
-                    1.  **Analyze Behaviors:** Scrutinize the provided behavioral data. For example, injecting into 'lsass.exe' or accessing 'Login Data' files maps to Credential Access. PowerShell execution maps to Execution. Creating a Run key maps to Persistence.
-                    2.  **Map to ATT&CK:** Map observed actions to specific MITRE ATT&CK techniques. Provide a concise justification for each mapping, directly referencing the behavior.
+                    1.  **Analyze Behaviors:** Scrutinize the provided behavioral data. For example, injecting into 'lsass.exe' maps to Credential Access. PowerShell execution maps to Execution. Creating a Run key maps to Persistence.
+                    2.  **Map to ATT&CK:** Map observed actions to specific MITRE ATT&CK techniques and provide a concise justification for each mapping.
                     3.  **Executive Summary:** Write a brief, high-level summary of the malware's primary objective and kill chain.
-                    4.  **Overall Threat Score:** Provide an overall behavioral threat score from 0 (benign) to 100 (highly malicious) based on the severity and number of tactics observed.
+                    4.  **Overall Threat Score:** Provide a score from 0 to 100 based on the severity and number of tactics observed.
                     5.  **JSON Output:** Format your entire response as a single, valid JSON object. Do not include any text or markdown formatting outside of the JSON structure.
 
                     **Required JSON Structure:**
@@ -917,6 +912,13 @@
                       "executiveSummary": "A brief, high-level summary...",
                       "overallThreatScore": <A number between 0 and 100>,
                       "matrix": {
+                        "TacticName": [
+                          {
+                            "technique": "TXXXX.YYY",
+                            "techniqueName": "Name of the Technique",
+                            "justification": "A concise explanation of why this technique was identified based on the observed behavior."
+                          }
+                        ],
                         "Reconnaissance": [], "Resource Development": [], "Initial Access": [], "Execution": [], "Persistence": [], "Privilege Escalation": [], "Defense Evasion": [], "Credential Access": [], "Discovery": [], "Lateral Movement": [], "Collection": [], "Command and Control": [], "Exfiltration": [], "Impact": []
                       }
                     }
@@ -1047,7 +1049,7 @@
                         {selectedUrl && <TestUrlModal url={selectedUrl} onClose={() => setSelectedUrl(null)} onUpdateStatus={updateUrlStatus} />}
                         {isAnalysisOpen && <AnalysisModal onClose={() => setIsAnalysisOpen(false)} isLoading={isAiLoading} stats={stats} effectiveness={effectiveness} analysisResult={analysisResult} />}
                         {isSourcePromptOpen && <SourcePromptModal isOpen={isSourcePromptOpen} onSubmit={startLookupWithSource} />}
-                        {isFileAnalysisModalOpen && (hashResult || hybridAnalysisResult) && <FileAnalysisModal onClose={() => setIsFileAnalysisModalOpen(false)} vtResult={hashResult} haResult={hybridAnalysisResult} onAiAnalyze={fetchFileAiAnalysis} aiResult={fileAiAnalysisResult} isAiLoading={isFileAiLoading} onMitreAnalyze={fetchMitreMatrixData} mitreResult={mitreMatrixData} abuseIpDbApiKey={abuseIpDbApiKey} virusTotalApiKey={virusTotalApiKey} vtDeduplication={vtDeduplication} vtInterpretation={vtInterpretation} addIoc={addIoc} behaviourRiskScores={behaviourRiskScores} isScoringBehaviour={isScoringBehaviour} fetchBehaviourRiskScores={fetchBehaviourRiskScores} sampleSource={currentSampleSource} getProxyUrl={getProxyUrl} />}
+                        {isFileAnalysisModalOpen && (hashResult || hybridAnalysisResult) && <FileAnalysisModal onClose={() => setIsFileAnalysisModalOpen(false)} vtResult={hashResult} haResult={hybridAnalysisResult} onAiAnalyze={fetchFileAiAnalysis} aiResult={fileAiAnalysisResult} isAiLoading={isFileAiLoading} onMitreAnalyze={fetchMitreMatrixData} mitreResult={mitreMatrixData} isMitreLoading={isMitreLoading} abuseIpDbApiKey={abuseIpDbApiKey} virusTotalApiKey={virusTotalApiKey} vtDeduplication={vtDeduplication} vtInterpretation={vtInterpretation} addIoc={addIoc} behaviourRiskScores={behaviourRiskScores} isScoringBehaviour={isScoringBehaviour} fetchBehaviourRiskScores={fetchBehaviourRiskScores} sampleSource={currentSampleSource} getProxyUrl={getProxyUrl} />}
                         {isCadyOpen && <CadyModal onClose={() => setIsCadyOpen(false)} geminiApiKey={geminiApiKey} vtResult={hashResult} haResult={hybridAnalysisResult} getProxyUrl={getProxyUrl}/>}
                         {toast && <Toast message={toast.message} type={toast.type} />}
                     </div>
@@ -1784,14 +1786,16 @@
                             );
                         case 'att&ck':
                             return (
-                                <div>
-                                    <button onClick={onMitreAnalyze} disabled={isMitreLoading} className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:shadow-blue-400/40 transform hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed mb-4">
+                                <div className="h-full flex flex-col">
+                                    <button onClick={onMitreAnalyze} disabled={isMitreLoading} className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:shadow-blue-400/40 transform hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed mb-4 flex-shrink-0">
                                         {isMitreLoading ? <Icon path={ICONS.Loader} className="w-6 h-6" spin={true} /> : <Icon path={ICONS.BrainCircuit} className="w-6 h-6" />}
                                         {mitreResult ? 'Re-Generate Matrix' : 'Generate ATT&CK Matrix'}
                                     </button>
-                                    {isMitreLoading && <LoadingTree />}
-                                    {mitreResult && mitreResult.error && <p className="text-[--accent-negative]">{mitreResult.error}</p>}
-                                    {mitreResult && !mitreResult.error && <MitreGridMatrix matrix={mitreResult.matrix} />}
+                                    <div className="flex-grow">
+                                        {isMitreLoading && <MitreLoadingAnimation />}
+                                        {mitreResult && mitreResult.error && <p className="text-[--accent-negative] p-4">{mitreResult.error}</p>}
+                                        {mitreResult && !mitreResult.error && <MitreGridMatrix matrix={mitreResult.matrix} />}
+                                    </div>
                                 </div>
                             );
                         default: return null;
@@ -1806,8 +1810,8 @@
 
                 return (
                     <div className="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 animate-fade-in" onClick={onClose}>
-                        <div className="ios-modal-glass w-full max-w-7xl rounded-3xl animate-fade-in-scale" onClick={e => e.stopPropagation()}>
-                            <div className="p-6 max-h-[90vh] flex flex-col">
+                        <div className={`ios-modal-glass w-full rounded-3xl animate-fade-in-scale transition-all duration-500 ease-in-out ${activeTab === 'att&ck' ? 'max-w-screen-xl' : 'max-w-7xl'}`} onClick={e => e.stopPropagation()}>
+                            <div className="p-6 h-[90vh] flex flex-col">
                                 <div className="flex justify-between items-center mb-4 flex-shrink-0">
                                     <h2 className="text-xl font-bold text-[--text-main]">File Analysis Report</h2>
                                     <div className="flex items-center gap-2">
@@ -2412,36 +2416,79 @@
             }
 
             function MitreGridMatrix({ matrix }) {
+                const { useState } = React;
+                const [hoveredTechnique, setHoveredTechnique] = useState(null);
                 const tactics = [ "Reconnaissance", "Resource Development", "Initial Access", "Execution", "Persistence", "Privilege Escalation", "Defense Evasion", "Credential Access", "Discovery", "Lateral Movement", "Collection", "Command and Control", "Exfiltration", "Impact" ];
                 
                 return (
-                    <div className="overflow-x-auto custom-scrollbar bg-black/20 p-2 rounded-lg text-base">
-                        <div className="grid" style={{ gridTemplateColumns: `repeat(${tactics.length}, minmax(160px, 1fr))`}}>
-                            {tactics.map(tactic => (
-                                <div key={tactic} className="text-center border-r border-[--border-color] last:border-r-0">
-                                    <h4 className="text-sm font-bold p-3 border-b border-[--border-color] whitespace-nowrap sticky top-0 bg-[--bg-secondary] z-10">{tactic}</h4>
-                                    <div className="p-2 space-y-2">
-                                        {(matrix[tactic] || []).map(tech => (
-                                            <div key={tech.technique} className="relative matrix-cell">
-                                                <a 
+                    <div className="flex flex-col h-full text-base">
+                        <div className="overflow-auto custom-scrollbar bg-black/20 p-2 rounded-lg flex-grow">
+                            <div className="grid" style={{ gridTemplateColumns: `repeat(${tactics.length}, minmax(160px, 1fr))`}}>
+                                {tactics.map(tactic => (
+                                    <div key={tactic} className="text-center border-r border-[--border-color] last:border-r-0">
+                                        <h4 className="text-sm font-bold p-3 border-b border-[--border-color] whitespace-nowrap sticky top-0 bg-[--bg-secondary] z-10">{tactic}</h4>
+                                        <div className="p-2 space-y-2">
+                                            {(matrix[tactic] || []).map(tech => (
+                                                 <a 
+                                                    key={tech.technique}
                                                     href={`https://attack.mitre.org/techniques/${tech.technique.replace('.', '/')}/`}
                                                     target="_blank" 
                                                     rel="noopener noreferrer"
                                                     className="block bg-rose-500/50 text-white text-sm font-mono p-2 rounded cursor-pointer hover:bg-rose-500/80 transition-colors"
                                                     title={`${tech.techniqueName}\nClick to view on MITRE ATT&CK®`}
+                                                    onMouseEnter={() => setHoveredTechnique(tech)}
+                                                    onMouseLeave={() => setHoveredTechnique(null)}
                                                 >
                                                     {tech.technique}
                                                 </a>
-                                                <div className="matrix-tooltip absolute bottom-full mb-2 left-1/2 -translate-x-1/2">
-                                                    <p className="font-bold text-[--text-main]">{tech.techniqueName}</p>
-                                                    <p className="text-[--text-dim] mt-1 text-sm">{tech.justification}</p>
-                                                </div>
-                                            </div>
-                                        ))}
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="mt-4 p-4 bg-black/30 rounded-lg h-32 flex-shrink-0 flex items-center justify-center transition-all duration-300">
+                             {hoveredTechnique ? (
+                                 <div className="animate-fade-in w-full">
+                                     <p className="font-bold text-[--text-main]">{hoveredTechnique.techniqueName} ({hoveredTechnique.technique})</p>
+                                     <p className="text-[--text-dim] mt-1 text-sm">{hoveredTechnique.justification}</p>
+                                 </div>
+                             ) : (
+                                 <p className="text-[--text-dim]">Hover over a technique to see details.</p>
+                             )}
+                        </div>
+                    </div>
+                );
+            }
+
+            function MitreLoadingAnimation() {
+                const [grid, setGrid] = useState(Array(100).fill(0));
+                const colors = ["#38bdf8", "#818cf8", "#c084fc", "#f471b5", "#475569"];
+
+                useEffect(() => {
+                    const timer = setInterval(() => {
+                        setGrid(prevGrid => {
+                            const newGrid = [...prevGrid];
+                            const randomIndex = Math.floor(Math.random() * newGrid.length);
+                            newGrid[randomIndex] = (newGrid[randomIndex] + 1) % colors.length;
+                            return newGrid;
+                        });
+                    }, 50);
+                    return () => clearInterval(timer);
+                }, []);
+
+                return (
+                    <div className="flex flex-col items-center justify-center p-8 h-full">
+                        <div className="grid grid-cols-10 gap-1 mb-4">
+                            {grid.map((colorIndex, i) => (
+                                <div 
+                                    key={i} 
+                                    className="w-8 h-8 rounded-sm transition-colors duration-500"
+                                    style={{ backgroundColor: colors[colorIndex] }}
+                                />
                             ))}
                         </div>
+                         <p className="text-[--text-dim] text-lg font-semibold animate-pulse">Mapping to ATT&CK Framework...</p>
                     </div>
                 );
             }
