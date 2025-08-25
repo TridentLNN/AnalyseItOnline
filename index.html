@@ -682,6 +682,7 @@
                     **Required Output:** Respond ONLY with a valid JSON object with two keys:
                     1. "score": A number from 0 (Safe) to 100 (Malicious).
                     2. "verdict": A single word: "Safe", "Suspicious", or "Malicious".
+                    3. Be very careful with noise. For example opening a pdf through adobe reader causes a whole bunch of actions to be performed. These are not necesarily malicious. Be very precise and conetext aware.
                     `;
 
                     const payload = { contents: [{ parts: [{ text: prompt }] }] };
@@ -898,7 +899,7 @@
                     const behaviourSummary = JSON.stringify(hashResult.behaviourReport);
                     const fileAttributes = hashResult?.fileReport?.data?.attributes;
                     
-                    const prompt = `You are an elite cybersecurity threat intelligence analyst. Your task is to analyze the provided sandbox behavioral report and file context, then generate a comprehensive MITRE ATT&CK analysis.
+                    const prompt = `You are an elite cybersecurity threat intelligence analyst. Your task is to analyze the provided sandbox behavioral report and file context, then generate a comprehensive MITRE ATT&CK analysis. Be very careful when the analysed files are documents, media files and so on - these execute trusted apps and the trusted apps perform a bunch of actions. Be very precise and accurate.
                     
                     **Context:**
                     - **File Names:** ${JSON.stringify(fileAttributes?.names)}
