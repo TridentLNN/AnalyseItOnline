@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orion Remediation Tool - User Manual</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Segoe+UI:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-text: #f5f5f5; --secondary-text: #cccccc; --accent-color: #00aaff; --detection-color: #ff9d6d;
+            --risk-critical-color: #ff2d2d; --risk-high-color: #ff4d4d; --risk-medium-color: #ff9d6d;
+            --risk-low-color: #ffd700; --risk-info-color: #2ecc71; --glass-bg: rgba(35, 35, 35, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1); --font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
+            --code-bg: rgba(0, 0, 0, 0.3);
+        }
+        @keyframes border-glow { 0% { border-color: rgba(0, 170, 255, 0.4); } 50% { border-color: rgba(255, 157, 109, 0.4); } 100% { border-color: rgba(0, 170, 255, 0.4); } }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--font-family); color: var(--primary-text); margin: 0; background-color: #121212; line-height: 1.7; }
+        .content-wrapper { padding: 40px; max-width: 1200px; margin: 0 auto; }
+        .glass-container { width: 100%; margin: 0 auto 30px auto; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 30px; animation: border-glow 8s ease-in-out infinite; box-sizing: border-box; }
+        .report-header { border-bottom: 1px solid var(--glass-border); padding-bottom: 20px; margin-bottom: 20px; }
+        h1, h2, h3 { font-weight: 300; }
+        h1 { font-size: 2.8em; margin: 0 0 10px 0; }
+        h1 span { font-weight: 600; color: var(--accent-color); }
+        h2 { font-size: 2em; color: var(--accent-color); border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; margin-top: 40px; }
+        h3 { font-size: 1.5em; color: var(--detection-color); margin-top: 30px; }
+        p { color: var(--secondary-text); }
+        a { color: var(--accent-color); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        code { background-color: var(--code-bg); padding: 3px 6px; border-radius: 6px; font-family: 'Share Tech Mono', monospace; color: #f5f5f5; }
+        .important-note { padding: 20px; margin: 25px 0; border-left: 5px solid var(--risk-high-color); background-color: rgba(255, 77, 77, 0.1); border-radius: 0 8px 8px 0; }
+        .important-note p { margin: 0; color: #ffacac; }
+        .important-note strong { color: #ff4d4d; }
+        .info-note { padding: 20px; margin: 25px 0; border-left: 5px solid var(--accent-color); background-color: rgba(0, 170, 255, 0.1); border-radius: 0 8px 8px 0; }
+        .info-note p { margin: 0; color: #a5dff9; }
+        .info-note strong { color: var(--accent-color); }
+        .steps-list { list-style: none; padding-left: 0; counter-reset: step-counter; }
+        .steps-list li { counter-increment: step-counter; margin-bottom: 20px; padding-left: 50px; position: relative; }
+        .steps-list li::before { content: counter(step-counter); position: absolute; left: 0; top: 0; width: 35px; height: 35px; background-color: var(--accent-color); color: #121212; border-radius: 50%; text-align: center; line-height: 35px; font-weight: bold; }
+        .steps-list li strong { color: var(--primary-text); display: block; font-size: 1.1em; margin-bottom: 5px; }
+        .scan-levels { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .level-card { background: var(--code-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--glass-border); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .level-card:hover { transform: translateY(-5px); box-shadow: 0 0 15px rgba(0, 170, 255, 0.2); }
+        .level-card h3 { margin-top: 0; }
+        .level-card ul { padding-left: 20px; color: var(--secondary-text); }
+        .report-feature { margin-bottom: 15px; }
+        .report-feature strong { color: var(--primary-text); }
+        .detection-breakdown { background-color: var(--code-bg); border-radius: 12px; padding: 25px; margin-top: 20px; border: 1px solid var(--glass-border); }
+        .detection-breakdown h4 { margin-top: 0; color: var(--primary-text); font-size: 1.2em; }
+        .detection-breakdown p { font-size: 0.95em; }
+        .icon { margin-right: 10px; }
+        .toc-list, .toc-sublist { list-style: none; padding-left: 0; }
+        .toc-list > li { margin-bottom: 10px; }
+        .toc-list > li > a { font-weight: bold; font-size: 1.1em; }
+        .toc-sublist { padding-left: 20px; margin-top: 8px; border-left: 1px solid var(--glass-border); }
+        .toc-sublist li a { color: var(--secondary-text); font-size: 1em; }
+        .toc-sublist li a:hover { color: var(--primary-text); }
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: #1e1e1e; }
+        ::-webkit-scrollbar-thumb { background-color: var(--accent-color); border-radius: 20px; border: 3px solid #1e1e1e; }
+        ::-webkit-scrollbar-thumb:hover { background-color: #0088cc; }
+    </style>
+</head>
+<body>
+    <div class="content-wrapper">
+        <div class="glass-container">
+            <div class="report-header">
+                <h1><span>Orion</span> Remediation Tool</h1>
+                <p>A comprehensive user guide for the standalone threat remediation script.</p>
+            </div>
+            
+            <p><strong>Thank you for choosing Orion Malware Cleaner.</strong> It's important to understand that this is <strong>not an antivirus replacement</strong> with real-time protection. Instead, it is a powerful, on-demand threat investigation and remediation toolkit designed for knowledgeable users to hunt for and remove active and dormant threats.</p>
+            <p>This guide will walk you through the entire process, from launching the script to understanding its findings and taking action. The tool is designed to be powerful, but its effectiveness relies on informed decisions from you, the operator.</p>
+
+            <h3 id="eula">The Boring Stuff (EULA)</h3>
+            <div class="important-note">
+                <p><strong>Use at Your Own Risk.</strong> This is a powerful tool that makes significant changes to your system, including deleting files and modifying the registry. By using this tool, you acknowledge that you are doing so at your own risk. The creators are not liable for any data loss, system instability, or other damages that may result from its use. <strong>It is strongly recommended that you back up any critical data before running a scan and performing remediation.</strong></p>
+            </div>
+
+        </div>
+
+        <div class="glass-container">
+            <h2><i class="fas fa-sitemap icon"></i>Quick Navigation</h2>
+            <ul class="toc-list">
+                <li><a href="#step1">Step 1: Preparation & Execution</a></li>
+                <li><a href="#step2">Step 2: Choosing Your Scan Level</a></li>
+                <li><a href="#step3">Step 3: Deconstructing the Report</a>
+                    <ul class="toc-sublist">
+                        <li><a href="#report-process">Live Process Monitor</a></li>
+                        <li><a href="#report-memory">Memory Anomaly Detections</a></li>
+                        <li><a href="#report-network">Live Network Connections</a></li>
+                        <li><a href="#report-files">Suspicious Files & Scripts</a></li>
+                        <li><a href="#report-dualuse">Dual-Use & Remote Access Tools</a></li>
+                        <li><a href="#report-persistence">Suspicious Persistence Mechanisms</a></li>
+                        <li><a href="#report-drivers">Abused / Vulnerable Driver Detections</a></li>
+                        <li><a href="#report-pups">Potentially Unwanted Programs (PUPs)</a></li>
+                        <li><a href="#report-tampering">System Tampering & Policy Changes</a></li>
+                        <li><a href="#report-cpr">CPR Toolbox (Clean, Repair, Optimize, Harden)</a></li>
+                        <li><a href="#report-system">System Information</a></li>
+                    </ul>
+                </li>
+                <li><a href="#step4">Step 4: The Remediation Workflow</a></li>
+                <li><a href="#step5">Step 5: Post-Remediation</a></li>
+            </ul>
+        </div>
+
+        <div class="glass-container">
+            <h2 id="step1"><i class="fas fa-shield-alt icon"></i>Step 1: Preparation & Execution</h2>
+            <p>Before you even think about running a scan, a few preparatory steps are essential for the best results.</p>
+
+            <div class="important-note">
+                <p><strong><i class="fas fa-exclamation-triangle icon"></i>Close All Applications!</strong> Before initiating a scan, save your work and close all open programs (web browsers, documents, games, etc.). This does two critical things:
+                <br>1. It prevents applications from locking files that the script may need to scan or remove.
+                <br>2. It gives the script a cleaner snapshot of your system's baseline activity, making it easier to spot anomalies.</p>
+            </div>
+            
+            <h3>Running as Administrator</h3>
+            <p>The script needs deep access to the system to inspect processes, check system files, and modify the registry. It MUST be run with Administrator privileges.</p>
+            
+            <h3>Execution Policy Bypass (Crucial!)</h3>
+            <p>Windows has a security feature called "Execution Policy" that prevents PowerShell scripts from running by default. To run Orion, you must bypass this policy for this single execution. This does not permanently change your system's security settings.</p>
+            <ol>
+                <li>Open the Start Menu and type <code>PowerShell</code>.</li>
+                <li>Right-click on "Windows PowerShell" and select "<strong>Run as administrator</strong>".</li>
+                <li>In the blue PowerShell window, first navigate to the directory where you saved the script. For example: <code>cd C:\Users\YourUser\Desktop\Orion</code></li>
+                <li>Now, execute the script using the bypass flag. Assuming your script is named <code>sa.ps1</code>, the command is:
+                <br><code>PowerShell.exe -ExecutionPolicy Bypass -File .\sa.ps1</code></li>
+                <li>Press Enter. The Orion menu should now appear.</li>
+            </ol>
+
+            <h3>Prerequisites & Automation</h3>
+            <p>The script's capabilities are enhanced by two external tools. The script will automatically search for them in its `modules` subfolder and in common installation paths.</p>
+            <ul>
+                <li><strong>7-Zip:</strong> If 7-Zip is found, the script enables <strong>Quarantine</strong> mode. Instead of permanently deleting malicious files, it moves them into a password-protected zip archive. This is the safest option. Without 7-Zip, the script will fall back to <strong>permanent deletion</strong>.</li>
+                <li><strong>Sysinternals Handle:</strong> This utility allows the script to identify and terminate processes that have a "lock" on a malicious file, enabling its removal. Without it, some locked files might require a system reboot to be deleted.</li>
+            </ul>
+
+            <h3>Log & Quarantine Location</h3>
+            <p>All operational output, detailed text logs, and quarantine archives are stored in a dedicated folder for easy review: <code>C:\Users\YourUsername\Documents\Orion_Logs\</code></p>
+
+            <h2 id="step2"><i class="fas fa-list-ul icon"></i>Step 2: Choosing Your Scan Level</h2>
+            <p>Orion offers three distinct scan levels, allowing you to tailor the depth and duration of the analysis to your needs. Before the menu appears, the script will quickly check the status of its Dynamic Cloud Intelligence (DCI) feeds and download updates if necessary.</p>
+
+            <div class="scan-levels">
+                <div class="level-card">
+                    <h3>[10] Gentle Scan</h3>
+                    <p>The fastest scan, designed to find <strong>live, active threats</strong>. It's a quick health check on what's currently happening on your system.</p>
+                    <ul>
+                        <li>Scans running processes for anomalies.</li>
+                        <li>Inspects loaded modules (DLLs).</li>
+                        <li>Runs the live network monitor to watch for suspicious outbound connections.</li>
+                    </ul>
+                </div>
+                <div class="level-card">
+                    <h3>[20] Elevated Scan</h3>
+                    <p>A more thorough investigation that includes everything from the Gentle scan, plus a hunt for <strong>dormant or persistent threats</strong>.</p>
+                    <ul>
+                        <li>Scans high-risk folders (Downloads, Temp, etc.) for suspicious files.</li>
+                        <li>Checks for common persistence mechanisms (e.g., Run Keys, Scheduled Tasks) that malware uses to restart itself.</li>
+                    </ul>
+                </div>
+                <div class="level-card">
+                    <h3>[30] Aggressive Scan</h3>
+                    <p>The most comprehensive analysis. This is a deep-dive that uses multiple engines to inspect every corner of the system for threats, policy violations, and unwanted software.</p>
+                    <ul>
+                        <li>Includes all previous checks.</li>
+                        <li>Activates the <strong>Multi-Engine Static Analysis</strong> to look *inside* files for malicious characteristics.</li>
+                        <li>Hunts for Potentially Unwanted Programs (PUPs), vulnerable drivers, and system tampering (e.g., disabled Task Manager).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2 id="step3"><i class="fas fa-file-invoice icon"></i>Step 3: Deconstructing the Report</h2>
+            <p>After the scan, the HTML report is your command center. Findings are grouped into categories, presented as collapsible "accordions". Understanding what each category represents is crucial for accurate remediation.</p>
+            
+            <div class="info-note">
+                <p><strong><i class="fas fa-shield-alt icon"></i>Built-in Safety and Accuracy!</strong> Orion is designed to be both powerful and safe. It includes a <strong>Stability Control System</strong> to prevent removal of critical Microsoft files, and a <strong>Relationship Analysis Engine</strong> to intelligently reduce false positives on legitimate third-party software.</p>
+            </div>
+
+            <h3 id="report-process"><i class="fas fa-chart-line icon"></i>Live Process Monitor</h3>
+            <p>This is a snapshot of all processes running on your system at the time of the scan. It is provided for informational and investigative purposes, allowing you to see which processes have network connections, if they are digitally signed, and if they have a visible window.</p>
+
+            <h3 id="report-memory"><i class="fas fa-brain icon"></i>Memory Anomaly Detections</h3>
+            <p>This category flags suspicious behavior happening in your computer's memory <strong>right now</strong>. These are active threats that require immediate attention.</p>
+            <div class="detection-breakdown">
+                <h4>What you'll find here:</h4>
+                <p><strong>LOLBin Abuse:</strong> "Living-off-the-Land Binaries" are legitimate Windows tools (like <code>powershell.exe</code>) being used maliciously. Orion detects this when they're launched by an unusual parent process (e.g., Word) or with suspicious command-line arguments.</p>
+                <p><strong>Process Masquerading:</strong> A malicious process naming itself after a critical Windows process, like <code>svchost.exe</code>, but running from the wrong location (e.g., a Temp folder instead of <code>C:\Windows\System32</code>).</p>
+                <p><strong>Process Injection:</strong> A legitimate process (like <code>explorer.exe</code>) has loaded an unsigned DLL from a suspicious, user-writable location. This is a classic malware hiding technique.</p>
+            </div>
+
+            <h3 id="report-network"><i class="fas fa-broadcast-tower icon"></i>Live Network Connections</h3>
+            <p>This accordion shows you which non-browser programs are communicating with the internet. It leverages both heuristics and <strong>Dynamic Cloud Intelligence (DCI)</strong>—a live threat feed of known malicious IPs and domains—to spot hidden C2 channels.</p>
+            <div class="detection-breakdown">
+                <h4>What you'll find here:</h4>
+                <p><strong>Botnet/C2 Detections:</strong> High-confidence alerts where a connection matches an entry in the DCI database or a strong heuristic, like a process connecting to an abused service (Discord CDN, Pastebin, Ngrok), a high-entropy domain (suggesting DGA malware), or directly to an IP address without resolving a domain name.</p>
+                <p><strong>Connection Info:</strong> Informational entries showing normal background activity. Review them for context, but they usually don't require action.</p>
+            </div>
+
+            <h3 id="report-files"><i class="fas fa-microscope icon"></i>Suspicious Files & Scripts</h3>
+            <p>This section is about potentially malicious files lying dormant on your hard drive. These might be droppers, payloads, or malicious scripts waiting to be executed.</p>
+            <div class="detection-breakdown">
+                <h4>What you'll find here:</h4>
+                <p><strong>Static Analysis Detections:</strong> Files flagged by looking inside them for suspicious indicators: high entropy (packed/encrypted), missing or fake version information, anti-analysis strings (like `VMWare`), suspicious imported functions, and more.</p>
+                <p><strong>Relationship Analysis:</strong> For files that look suspicious but have some legitimate properties, this engine provides a "Confidence" score. It checks for other signed files from the same software vendor nearby, helping to distinguish a legitimate installer component from a standalone threat.</p>
+                <p><strong>Suspicious Scripts/LNK/PDF:</strong> Scripts (<code>.js</code>, <code>.vbs</code>) with heavy obfuscation, shortcut files (<code>.lnk</code>) that point to malicious commands, and PDFs with active content keywords are flagged here.</p>
+            </div>
+
+            <h3 id="report-dualuse"><i class="fas fa-user-secret icon"></i>Dual-Use & Remote Access Tools</h3>
+            <p>This category lists legitimate software that, while useful for IT professionals, is the primary tool used by attackers and tech support scammers to gain control of a victim's computer.</p>
+            <div class="detection-breakdown">
+                <h4>What you'll find here:</h4>
+                <p>Programs like AnyDesk, TeamViewer, LogMeIn, etc. If you did not explicitly ask a known, trusted IT contact to install this, <strong>it should be removed immediately.</strong></p>
+            </div>
+
+            <h3 id="report-persistence"><i class="fas fa-cogs icon"></i>Suspicious Persistence Mechanisms</h3>
+            <p>Persistence is how malware survives a reboot. This category is one of the most critical, as it finds the hooks that malware embeds into the system to ensure it runs again every time you start your computer.</p>
+            <div class="detection-breakdown">
+                <h4>What you'll find here:</h4>
+                <p>The script checks all the common hiding spots: Registry Run Keys, Scheduled Tasks, Windows Services, Startup Folders, and more. Finding an unsigned or strangely located program here confirms that the machine is compromised.</p>
+            </div>
+
+            <h3 id="report-drivers"><i class="fas fa-car-crash icon"></i>Abused / Vulnerable Driver Detections</h3>
+            <p>This category flags the presence of legitimate, signed kernel drivers that are known to contain vulnerabilities. Attackers can abuse these drivers to disable security software or load their own malicious code into the kernel.</p>
+            <div class="detection-breakdown">
+                <h4>What you'll find here:</h4>
+                <p>The script maintains a list of known-vulnerable drivers (e.g., <code>dbk64.sys</code>, <code>gmer.sys</code>). Finding one of these on your system is a high-risk indicator. Unless you have a specific, known reason for having this driver, it should be removed.</p>
+            </div>
+
+            <h3 id="report-pups"><i class="fas fa-box-open icon"></i>Potentially Unwanted Programs (PUPs)</h3>
+            <p>PUPs are not viruses, but they are "junkware" that often comes bundled with other software. They can degrade performance, inject ads, and compromise your privacy.</p>
+            <div class="detection-breakdown">
+                <h4>What you'll find here:</h4>
+                <p>Adware, browser toolbars, and "scareware" system cleaners. Generally, anything found here can be safely removed.</p>
+            </div>
+
+            <h3 id="report-tampering"><i class="fas fa-wrench icon"></i>System Tampering & Policy Changes</h3>
+            <p>This section detects when malware has deliberately weakened your system's security settings to make its job easier or to prevent you from fighting back.</p>
+             <div class="detection-breakdown">
+                <h4>What you'll find here:</h4>
+                <p>Common findings include the Task Manager being disabled, Windows Defender exclusions being added for the malware's folder, or the HOSTS file being modified to block you from accessing security websites.</p>
+            </div>
+            
+            <h3 id="report-cpr"><i class="fas fa-heartbeat icon"></i>CPR Toolbox (Clean, Repair, Optimize, Harden)</h3>
+            <p>This is a special category containing a suite of proactive tools for system maintenance, hardening, and optimization. These are optional actions you can take to improve your system's health and security posture.</p>
+            <div class="detection-breakdown">
+                <h4><i class="fas fa-broom icon"></i>Clean</h4>
+                <p>Actions to remove clutter like temporary files, the Recycle Bin, and old Windows Update caches.</p>
+                <h4><i class="fas fa-tools icon"></i>Repair</h4>
+                <p>Tools to verify and repair the integrity of core system files using System File Checker (<code>SFC</code>) and DISM.</p>
+                <h4><i class="fas fa-tachometer-alt icon"></i>Optimize</h4>
+                <p>Actions to improve performance, like running drive optimizers (Defrag/TRIM) and managing startup programs.</p>
+                <h4><i class="fas fa-lock icon"></i>Harden</h4>
+                <p>Actions to reduce your system's "attack surface" by enabling advanced Windows Defender features (PUP Protection, ASR Rules) and blocking commonly abused tools from accessing the internet.</p>
+            </div>
+
+            <h3 id="report-system"><i class="fas fa-desktop icon"></i>System Information</h3>
+            <p>An informational section at the bottom of the report that provides a detailed summary of your computer's operating system, hardware, network configuration, and a list of all installed software for your reference.</p>
+
+            <h2 id="step4"><i class="fas fa-tasks icon"></i>Step 4: The Remediation Workflow</h2>
+            <p>Once you have reviewed the findings, you can instruct the script on what actions to take. This is a deliberate, two-step process to prevent accidental changes. Orion also includes several automated remediation enhancements.</p>
+            
+            <div class="info-note">
+                <p><strong><i class="fas fa-cogs icon"></i>Advanced Remediation Features</strong></p>
+                <p><strong>Chain Remediation:</strong> If you select a persistence item (like a Run Key), Orion automatically finds and selects the malicious file it points to for removal.</p>
+                <p><strong>Correlational Cleanup:</strong> After removing a file, Orion scans the same folder for related malware artifacts (like `.dat` or `.zip` files) and removes them. It will also delete the parent folder if it's left empty.</p>
+                <p><strong>Orphaned Shortcut Removal:</strong> Any shortcuts pointing to a file you've selected for remediation will also be automatically removed from the desktop and start menu.</p>
+                <p><strong>Firewall Rules:</strong> In the details modal for any network detection, you have the option to create a Windows Firewall rule to block that specific process or destination IP address from making outbound connections.</p>
+            </div>
+            
+            <ol class="steps-list">
+                <li>
+                    <strong>Select Items for Remediation</strong>
+                    In the HTML report, go through each category and place a checkmark next to every item you wish to remove or fix. You can use the "select all" checkbox at the top of each table.
+                </li>
+                <li>
+                    <strong>Generate the Remediation File</strong>
+                    After making your selections, click the orange <code>Generate Remediation File</code> button at the top of the report. This will download a JSON file (e.g., <code>Orion_Remediation_List_....json</code>) to your computer's <strong>Downloads</strong> folder. <strong>Do not change the name of this file.</strong>
+                </li>
+                <li>
+                    <strong>Confirm in PowerShell</strong>
+                    Go back to the PowerShell window where the script is waiting. It will now prompt you to "Press any key after you have generated the remediation file". Press any key.
+                </li>
+                <li>
+                    <strong>Execute Remediation</strong>
+                    The script will automatically find the JSON file, read your selections, and begin taking action. You will see its progress in the PowerShell window as it quarantines files, removes registry keys, and creates firewall rules.
+                </li>
+            </ol>
+
+            <h2 id="step5"><i class="fas fa-check-circle icon"></i>Step 5: Post-Remediation</h2>
+            <p>After the remediation actions are complete, the script will provide a final summary.</p>
+            <ul>
+                <li><strong>Summary of Actions:</strong> A list of all actions taken will be displayed in the console.</li>
+                <li><strong>Quarantine Archive:</strong> If quarantine was enabled, it will tell you the path to the password-protected zip file. The password is always <code>infected</code>.</li>
+                <li><strong>Reboot Required:</strong> If the script was unable to remove a locked file, it will schedule it for deletion on the next reboot. If you see this message, it is critical that you restart your computer to complete the cleanup.</li>
+            </ul>
+
+            <p>This concludes the manual. Stay vigilant, and happy hunting!</p>
+        </div>
+    </div>
+</body>
+</html>
